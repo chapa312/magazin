@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кофта 1 — Просто вещи</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; color: #333; }
+    .header { padding: 20px; text-align: center; background: #222; color: #fff; position: relative; border-radius: 12px 12px 0 0; }
+    .header h1 { margin: 0; font-size: 28px; }
+    .container { max-width: 800px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; }
+    .image-wrapper { position: relative; overflow: hidden; }
+    .image-wrapper img { width: 100%; display: block; }
+    .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: #fff; border: none; padding: 10px; border-radius: 50%; cursor: pointer; font-size: 20px; transition: background 0.3s; }
+    .nav-arrow:hover { background: rgba(0,0,0,0.7); }
+    .nav-arrow.left { left: 10px; }
+    .nav-arrow.right { right: 10px; }
+    .details { padding: 20px; }
+    .price { font-size: 24px; font-weight: bold; margin: 10px 0; color: #222; }
+    .info { margin: 15px 0; }
+    .info h3 { margin-bottom: 8px; font-size: 18px; color: #555; }
+    .info p { margin: 4px 0; font-size: 16px; }
+    .actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn { flex: 1; padding: 12px; text-align: center; border-radius: 8px; text-decoration: none; font-weight: bold; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+    .btn-add { background: linear-gradient(135deg, #222, #000); color: #fff; border: none; }
+    .btn-add:hover { background: linear-gradient(135deg, #333, #111); transform: translateY(-2px); }
+    .btn-back { background: #e0e0e0; color: #333; text-decoration: none; }
+    .btn-back:hover { background: #d4d4d4; }
+    /* Cart styles from main page */
+    .cart { position: fixed; bottom: 80px; right: 20px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; cursor: pointer; }
+    .cart h2 { margin: 10px 0; font-size: 16px; color: #333; }
+    .cart ul { list-style: none; margin: 0; padding: 0; max-height: 200px; overflow-y: auto; }
+    .cart li { margin-bottom: 5px; font-size: 14px; color: #555; }
+    .checkout-btn { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; font-size: 16px; border: none; border-radius: 8px; background: #007bff; color: #fff; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+    .checkout-btn:hover { background: #0056b3; transform: translateY(-2px); }
+    .checkout-btn:active { transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Кофта 1</h1>
+    </div>
+    <div class="image-wrapper">
+      <img id="productImage" src="img/kofta1.jpeg" alt="Кофта 1">
+      <button class="nav-arrow left" id="prevBtn">&#8249;</button>
+      <button class="nav-arrow right" id="nextBtn">&#8250;</button>
+    </div>
+    <div class="details">
+      <div class="price">2 000 ₽</div>
+      <div class="info"><h3>Состав:</h3><p>80% хлопок, 20% полиэстер</p></div>
+      <div class="info"><h3>Тип:</h3><p>Утеплённая худи с капюшоном</p></div>
+      <div class="info"><h3>Описание:</h3><p>Эта стильная худи идеально подходит для прохладной погоды. Мягкий материал и аккуратные швы обеспечивают комфорт и долговечность.</p></div>
+      <div class="actions">
+        <button class="btn btn-add" id="addBtn">Добавить в корзину</button>
+        <a href="index.html" class="btn btn-back">Назад</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="cart" id="cart">
+    <h2>Корзина (<span id="count">0</span>)</h2>
+    <ul id="cart-list"></ul>
+  </div>
+  <button class="checkout-btn" id="checkout-btn">Оформить заказ</button>
+
+  <script>
+    // Product image switch
+    const images = ['img/kofta1.jpeg', 'img/kofta1-back.jpeg']; let currentIndex = 0;
+    const imgEl = document.getElementById('productImage');
+    document.getElementById('prevBtn').addEventListener('click', e => { e.stopPropagation(); currentIndex = (currentIndex - 1 + images.length) % images.length; imgEl.src = images[currentIndex]; });
+    document.getElementById('nextBtn').addEventListener('click', e => { e.stopPropagation(); currentIndex = (currentIndex + 1) % images.length; imgEl.src = images[currentIndex]; });
+
+    // Cart logic
+    const cart = [];
+    const renderCart = () => {
+      const list = document.getElementById('cart-list'); list.innerHTML = '';
+      cart.forEach(item => { const li = document.createElement('li'); li.textContent = `${item.name} — ${item.price}₽`; list.appendChild(li); });
+      document.getElementById('count').textContent = cart.length;
+    };
+    const updateCartUI = () => {
+      renderCart();
+      document.getElementById('checkout-btn').style.display = cart.length ? 'block' : 'none';
+    };
+
+    // Add to cart button
+    document.getElementById('addBtn').addEventListener('click', e => {
+      e.stopPropagation(); cart.push({ id:1, name:'Кофта 1', price:2000 }); updateCartUI();
+      const tg = window.Telegram && window.Telegram.WebApp;
+      if (tg) tg.sendData(JSON.stringify({ action:'add', items:cart }));
+    });
+
+    // Checkout button
+    document.getElementById('checkout-btn').addEventListener('click', () => {
+      const tg = window.Telegram && window.Telegram.WebApp;
+      if (tg) tg.sendData(JSON.stringify({ action:'checkout', items:cart }));
+      else alert('Ваш заказ: ' + JSON.stringify(cart));
+    });
+
+    // Cart click
+    document.getElementById('cart').addEventListener('click', () => window.location.href = 'cart.html');
+
+    // Init
+    updateCartUI();
+  </script>
+</body>
+</html>
