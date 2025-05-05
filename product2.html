@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Кофта 1 — Просто вещи</title>
+  <title>Кофта 2 — Просто вещи</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; color: #333; }
     .container { display: flex; max-width: 1000px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -49,37 +49,37 @@
 <body>
   <div class="container">
     <div class="image-col">
-      <img id="productImage" src="img/kofta1.jpeg" alt="Кофта 1">
-      <button class="nav-arrow left" id="prevBtn"><</button>
-      <button class="nav-arrow right" id="nextBtn">></button>
+      <img id="productImage2" src="img/kofta2.jpeg" alt="Кофта 2">
+      <button class="nav-arrow left" id="prevBtn2"><</button>
+      <button class="nav-arrow right" id="nextBtn2">></button>
     </div>
     <div class="info-col">
-      <div class="sku">Артикул: HODI-001</div>
-      <div class="price">2 000 ₽</div>
+      <div class="sku">Артикул: HODI-002</div>
+      <div class="price">2 500 ₽</div>
       <div class="option-group">
-        <label for="sizeSelect">Размер</label>
-        <select id="sizeSelect">
+        <label for="sizeSelect2">Размер</label>
+        <select id="sizeSelect2">
           <option>S</option>
           <option>M</option>
           <option>L</option>
           <option>XL</option>
         </select>
       </div>
-      <button class="btn-buy" id="buyBtn">Купить</button>
+      <button class="btn-buy" id="buyBtn2">Купить</button>
       <div class="details">
-        <div class="detail-item">Состав: 80% хлопок, 20% полиэстер</div>
-        <div class="detail-item">Тип: Утеплённая худи с капюшоном</div>
-        <div class="detail-item">Описание: мягкий материал, аккуратные швы, долговечность</div>
+        <div class="detail-item">Состав: 70% хлопок, 30% полиэстер</div>
+        <div class="detail-item">Тип: Флисированная худи с карманом</div>
+        <div class="detail-item">Описание: мягкий флис внутри и плотный трикотаж снаружи</div>
       </div>
       <div class="description">
-        Эта стильная худи идеально подходит для прохладной погоды. На изделии крупный принт и фирменная жаккардовая бирка бренда.
+        Удобная худи с карманом-кенгуру, идеально согревает в холодную погоду. Яркий принт и комфортный капюшон.
         <ul>
-          <li>Размеры по размерной сетке в FAQ.</li>
-          <li>Изображение может отличаться от оригинала.</li>
+          <li>Смотрите таблицу размеров в FAQ.</li>
+          <li>Цвет может немного отличаться.</li>
           <li>Стирать при 30° наизнанку.</li>
         </ul>
       </div>
-      <div class="weight">Вес: 300 г</div>
+      <div class="weight">Вес: 350 г</div>
     </div>
   </div>
 
@@ -90,20 +90,14 @@
   <button class="checkout-btn" id="checkout-btn">Оформить заказ</button>
 
   <script>
-    const images = ['img/kofta1.jpeg', 'img/kofta1-back.jpeg'];
-    let currentIndex = 0;
-    const imgEl = document.getElementById('productImage');
-    document.getElementById('prevBtn').addEventListener('click', e => {
-      e.stopPropagation();
-      currentIndex = (currentIndex - 1 + images.length) % images.length;
-      imgEl.src = images[currentIndex];
-    });
-    document.getElementById('nextBtn').addEventListener('click', e => {
-      e.stopPropagation();
-      currentIndex = (currentIndex + 1) % images.length;
-      imgEl.src = images[currentIndex];
-    });
+    // Switch images for product 2
+    const images2 = ['img/kofta2.jpeg', 'img/kofta2-back.jpeg'];
+    let idx2 = 0;
+    const imgEl2 = document.getElementById('productImage2');
+    document.getElementById('prevBtn2').addEventListener('click', e => { e.stopPropagation(); idx2 = (idx2 - 1 + images2.length) % images2.length; imgEl2.src = images2[idx2]; });
+    document.getElementById('nextBtn2').addEventListener('click', e => { e.stopPropagation(); idx2 = (idx2 + 1) % images2.length; imgEl2.src = images2[idx2]; });
 
+    // Cart logic (shared)
     const cart = [];
     const renderCart = () => {
       const list = document.getElementById('cart-list'); list.innerHTML = '';
@@ -111,17 +105,22 @@
       document.getElementById('count').textContent = cart.length;
     };
     const updateCartUI = () => { renderCart(); document.getElementById('checkout-btn').style.display = cart.length ? 'block' : 'none'; };
-    document.getElementById('buyBtn').addEventListener('click', () => {
-      cart.push({ name: 'Кофта 1', price: 2000 }); updateCartUI();
+
+    // Buy product 2
+    document.getElementById('buyBtn2').addEventListener('click', () => {
+      cart.push({ name: 'Кофта 2', price: 2500 }); updateCartUI();
       const tg = window.Telegram && window.Telegram.WebApp;
       if (tg) tg.sendData(JSON.stringify({ action: 'add', items: cart }));
     });
+    // Checkout
     document.getElementById('checkout-btn').addEventListener('click', () => {
       const tg = window.Telegram && window.Telegram.WebApp;
       if (tg) tg.sendData(JSON.stringify({ action: 'checkout', items: cart }));
       else alert('Ваш заказ: ' + JSON.stringify(cart));
     });
+    // Go to cart
     document.getElementById('cart').addEventListener('click', () => window.location.href = 'cart.html');
+
     updateCartUI();
   </script>
 </body>
