@@ -1,128 +1,276 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Кофта 1 — Просто вещи</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; color: #333; }
-    .container { display: flex; max-width: 1000px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .image-col, .info-col { padding: 20px; }
-    .image-col { flex: 1; background: #fafafa; display: flex; align-items: center; justify-content: center; position: relative; }
-    .image-col img { max-width: 100%; max-height: 600px; object-fit: contain; }
-    .nav-arrow {
+    /* Общие стили */
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #fff;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #333;
+    }
+    h1 a {
+      text-decoration: none;
+      color: inherit;
+    }
+    .page-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 20px;
+    }
+
+    /* Галерея */
+    .gallery {
+      position: relative;
+      flex: 0 0 40%;
+      max-width: 40%;
+    }
+    .gallery .main-img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      display: block;
+    }
+    .arrow {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: none;
-      color: #555;
-      border: none;
+      font-size: 32px;
+      color: rgba(0,0,0,0.6);
       cursor: pointer;
-      font-size: 24px;
-      padding: 8px;
-      transition: color 0.3s;
+      user-select: none;
     }
-    .nav-arrow:hover { color: #000; }
-    .nav-arrow.left { left: 10px; }
-    .nav-arrow.right { right: 10px; }
-    .info-col { flex: 1; display: flex; flex-direction: column; }
-    .sku { font-size: 14px; color: #888; margin-bottom: 8px; }
-    .price { font-size: 32px; font-weight: bold; margin: 4px 0 12px; }
-    .option-group { margin-bottom: 20px; }
-    .option-group label { display: block; font-size: 14px; color: #555; margin-bottom: 6px; }
-    .option-group select { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; }
-    .btn-buy { margin: 20px 0; padding: 14px; background: #000; color: #fff; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: background 0.3s; }
-    .btn-buy:hover { background: #333; }
-    .details { margin-top: 30px; flex-grow: 1; }
-    .details .detail-item { font-size: 16px; margin-bottom: 6px; }
-    .description { margin: 20px 0; line-height: 1.5; font-size: 15px; color: #555; }
-    .description ul { padding-left: 20px; list-style: disc; margin: 10px 0; }
-    .weight { font-size: 14px; color: #888; margin-top: auto; }
-    .cart { position: fixed; bottom: 80px; right: 20px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; cursor: pointer; }
-    .cart h2 { margin: 10px 0; font-size: 16px; color: #333; }
-    .cart ul { list-style: none; margin: 0; padding: 0; max-height: 200px; overflow-y: auto; }
-    .cart li { margin-bottom: 5px; font-size: 14px; color: #555; }
-    .checkout-btn { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; font-size: 16px; border: none; border-radius: 8px; background: #007bff; color: #fff; cursor: pointer; transition: background 0.3s; }
-    .checkout-btn:hover { background: #0056b3; }
+    .arrow.left  { left: 10px; }
+    .arrow.right { right: 10px; }
+
+    .thumbnails {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-start;
+    }
+    .thumbnails img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border: 2px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+    .thumbnails img.active { border-color: #000; }
+
+    /* Детали товара */
+    .details {
+      flex: 1 1 60%;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+    }
+    .details .product-title { font-size: 28px; font-weight: 600; margin-bottom: 8px; color: #222; }
+    .details .sku           { font-size: 14px; color: #777; margin-bottom: 16px; }
+    .details .price         { font-size: 28px; font-weight: bold; margin-bottom: 16px; }
+    .details label          { font-size: 14px; color: #333; margin-top: 12px; margin-bottom: 4px; }
+    .details select         { padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; }
+    .details button.add-btn { margin-top: 20px; padding: 12px; background: #000; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background .2s; }
+    .details button.add-btn:hover { background: #333; }
+    .details .desc { font-size: 14px; color: #444; line-height: 1.5; margin: 16px 0; }
+    .details ul    { margin: 0 0 16px 20px; }
+    .details ul li { font-size: 14px; color: #555; margin-bottom: 6px; }
+    .details .weight { font-size: 13px; color: #777; }
+
+    /* Корзина */
+    #cart-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #fff;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+    #cart-button:hover { background: #f0f0f0; }
+    #cart-drawer {
+      position: fixed;
+      top: 0;
+      right: -360px;
+      width: 360px;
+      height: 100vh;
+      background: #fff;
+      box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+      transition: right .3s ease;
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+    }
+    #cart-drawer.open { right: 0; }
+    .drawer-header { padding: 24px 20px; font-size: 24px; font-weight: 600; border-bottom: 1px solid #e0e0e0; position: relative; }
+    .drawer-header .close-btn { position: absolute; top: 24px; right: 20px; background: none; border: none; font-size: 20px; cursor: pointer; }
+    .drawer-content { flex-grow: 1; overflow-y: auto; padding: 0 20px; }
+    .drawer-item { display: flex; align-items: center; padding: 16px 0; border-bottom: 1px solid #e0e0e0; }
+    .drawer-item:last-child { border-bottom: none; }
+    .drawer-item img { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; margin-right: 12px; background: #f5f5f5; }
+    .item-info .title { font-size: 18px; font-weight: 500; color: #222; margin-bottom: 4px; }
+    .item-info .price { font-size: 14px; color: #666; }
+    .item-controls { display: flex; align-items: center; margin-left: auto; }
+    .item-controls button { width: 28px; height: 28px; border: 1px solid #ccc; background: #fafafa; border-radius: 4px; font-size: 18px; cursor: pointer; margin: 0 4px; transition: background .2s; }
+    .item-controls button:hover { background: #f0f0f0; }
+    .item-controls .qty { min-width: 24px; text-align: center; font-size: 16px; font-weight: 500; }
+    .drawer-footer { padding: 20px; border-top: 1px solid #e0e0e0; }
+    .drawer-footer .sum { font-size: 20px; font-weight: 600; text-align: right; margin-bottom: 16px; }
+    .drawer-footer .checkout-btn { width: 100%; padding: 14px 0; background: #000; color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: background .3s; }
+    .drawer-footer .checkout-btn:hover { background: #333; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="image-col">
-      <img id="productImage" src="img/kofta1.jpeg" alt="Кофта 1">
-      <button class="nav-arrow left" id="prevBtn"><</button>
-      <button class="nav-arrow right" id="nextBtn">></button>
+  <h1><a href="index.html">Просто вещи</a></h1>
+  <div class="page-container">
+    <div class="gallery">
+      <span class="arrow left" onclick="prevImage()">‹</span>
+      <img id="mainImg" class="main-img" src="img/kofta1.jpeg" alt="Кофта 1 — фронт">
+      <span class="arrow right" onclick="nextImage()">›</span>
+      <div class="thumbnails" id="thumbs">
+        <img src="img/kofta1.jpeg"      alt="Фронт" data-index="0">
+        <img src="img/kofta1-back.jpeg" alt="Спина" data-index="1">
+      </div>
     </div>
-    <div class="info-col">
+    <div class="details">
+      <div class="product-title">Кофта 1</div>
       <div class="sku">Артикул: HODI-001</div>
-      <div class="price">2 000 ₽</div>
-      <div class="option-group">
-        <label for="sizeSelect">Размер</label>
-        <select id="sizeSelect">
-          <option>S</option>
-          <option>M</option>
-          <option>L</option>
-          <option>XL</option>
-        </select>
-      </div>
-      <button class="btn-buy" id="buyBtn">Купить</button>
-      <div class="details">
-        <div class="detail-item">Состав: 80% хлопок, 20% полиэстер</div>
-        <div class="detail-item">Тип: Утеплённая худи с капюшоном</div>
-        <div class="detail-item">Описание: мягкий материал, аккуратные швы, долговечность</div>
-      </div>
-      <div class="description">
-        Эта стильная худи идеально подходит для прохладной погоды. На изделии крупный принт и фирменная жаккардовая бирка бренда.
-        <ul>
-          <li>Размеры по размерной сетке в FAQ.</li>
-          <li>Изображение может отличаться от оригинала.</li>
-          <li>Стирать при 30° наизнанку.</li>
-        </ul>
-      </div>
+      <div class="price">2000 ₽</div>
+      <label for="size">Размер</label>
+      <select id="size">
+        <option>S</option>
+        <option>M</option>
+        <option>L</option>
+      </select>
+      <button class="add-btn" id="addBtn">Добавить в корзину</button>
+      <div class="desc">Состав: 100% хлопок. Укорочённая худи с мягким флисом внутри и плотным трикотажем снаружи.</div>
+      <ul>
+        <li>Таблица размеров в разделе FAQ</li>
+        <li>Цвет может слегка отличаться</li>
+        <li>Стирать при 30° наизнанку</li>
+      </ul>
       <div class="weight">Вес: 300 г</div>
     </div>
   </div>
 
-  <div class="cart" id="cart">
-    <h2>Корзина (<span id="count">0</span>)</h2>
-    <ul id="cart-list"></ul>
+  <!-- Корзина -->
+  <button id="cart-button" onclick="openDrawer()">Корзина (0)</button>
+  <div id="cart-drawer">
+    <div class="drawer-header">
+      Ваш заказ
+      <button class="close-btn" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-content"><div id="drawer-list"></div></div>
+    <div class="drawer-footer">
+      <div class="sum">Сумма: <span id="drawer-sum">0</span> ₽</div>
+      <button class="checkout-btn" onclick="onCheckout()">Оформить заказ</button>
+    </div>
   </div>
-  <button class="checkout-btn" id="checkout-btn">Оформить заказ</button>
 
   <script>
-    const images = ['img/kofta1.jpeg', 'img/kofta1-back.jpeg'];
-    let currentIndex = 0;
-    const imgEl = document.getElementById('productImage');
-    document.getElementById('prevBtn').addEventListener('click', e => {
-      e.stopPropagation();
-      currentIndex = (currentIndex - 1 + images.length) % images.length;
-      imgEl.src = images[currentIndex];
+    // Галерея
+    const images = ['img/kofta1.jpeg','img/kofta1-back.jpeg'];
+    let current = 0;
+    const mainImg = document.getElementById('mainImg');
+    const thumbs = document.getElementById('thumbs');
+    thumbs.addEventListener('click', e => {
+      if (e.target.tagName !== 'IMG') return;
+      current = +e.target.dataset.index;
+      updateGallery();
     });
-    document.getElementById('nextBtn').addEventListener('click', e => {
-      e.stopPropagation();
-      currentIndex = (currentIndex + 1) % images.length;
-      imgEl.src = images[currentIndex];
+    function updateGallery() {
+      mainImg.src = images[current];
+      Array.from(thumbs.children).forEach((img,i) => img.classList.toggle('active', i === current));
+    }
+    function prevImage() { current = (current + images.length - 1) % images.length; updateGallery(); }
+    function nextImage() { current = (current + 1) % images.length; updateGallery(); }
+    updateGallery();
+
+    // Корзина
+    const product = { id:1, name:'Кофта 1', price:2000, image: images[0] };
+    let cart = JSON.parse(localStorage.getItem('cart')||'[]');
+
+    const cartBtn = document.getElementById('addBtn');
+    cartBtn.addEventListener('click', () => {
+      cart.push(product);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartUI();
+      openDrawer();
     });
 
-    const cart = [];
-    const renderCart = () => {
-      const list = document.getElementById('cart-list'); list.innerHTML = '';
-      cart.forEach(item => { const li = document.createElement('li'); li.textContent = `${item.name} — ${item.price}₽`; list.appendChild(li); });
-      document.getElementById('count').textContent = cart.length;
-    };
-    const updateCartUI = () => { renderCart(); document.getElementById('checkout-btn').style.display = cart.length ? 'block' : 'none'; };
-    document.getElementById('buyBtn').addEventListener('click', () => {
-      cart.push({ name: 'Кофта 1', price: 2000 }); updateCartUI();
-      const tg = window.Telegram && window.Telegram.WebApp;
-      if (tg) tg.sendData(JSON.stringify({ action: 'add', items: cart }));
-    });
-    document.getElementById('checkout-btn').addEventListener('click', () => {
-      const tg = window.Telegram && window.Telegram.WebApp;
-      if (tg) tg.sendData(JSON.stringify({ action: 'checkout', items: cart }));
-      else alert('Ваш заказ: ' + JSON.stringify(cart));
-    });
-    document.getElementById('cart').addEventListener('click', () => window.location.href = 'cart.html');
-    updateCartUI();
+    window.addEventListener('DOMContentLoaded', updateCartUI);
+
+    function updateCartUI() {
+      const list  = document.getElementById('drawer-list');
+      const sumEl = document.getElementById('drawer-sum');
+      const btn   = document.getElementById('cart-button');
+      list.innerHTML = '';
+      let sum = 0;
+      const grouped = {};
+      cart.forEach(item => {
+        if (!grouped[item.id]) grouped[item.id] = { item, qty: 0 };
+        grouped[item.id].qty++;
+      });
+      Object.values(grouped).forEach(({ item, qty }) => {
+        sum += item.price * qty;
+        const row = document.createElement('div');
+        row.className = 'drawer-item';
+        row.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="item-info">
+            <div class="title">${item.name}</div>
+            <div class="price">${item.price} ₽</div>
+          </div>
+          <div class="item-controls">
+            <button onclick="changeQty(${item.id}, -1)">−</button>
+            <span class="qty">${qty}</span>
+            <button onclick="changeQty(${item.id}, +1)">+</button>
+            <button class="remove-btn" onclick="removeItem(${item.id})">×</button>
+          </div>`;
+        list.append(row);
+      });
+      sumEl.textContent = sum;
+      btn.textContent = `Корзина (${cart.length})`;
+    }
+
+    function changeQty(id, delta) {
+      if (delta > 0) {
+        const found = cart.find(x => x.id === id);
+        if (found) cart.push(found);
+      } else {
+        const idx = cart.findIndex(x => x.id === id);
+        if (idx > -1) cart.splice(idx, 1);
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    function removeItem(id) {
+      cart = cart.filter(x => x.id !== id);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    function openDrawer() { document.getElementById('cart-drawer').classList.add('open'); }
+    function closeDrawer() { document.getElementById('cart-drawer').classList.remove('open'); }
+    function onCheckout() { alert('Ваш заказ: ' + JSON.stringify(cart)); }
   </script>
 </body>
 </html>
