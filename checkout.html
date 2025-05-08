@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Оформление заказа — Просто вещи</title>
+  <style>
+    body { margin:0; padding:20px; font-family: Arial, sans-serif; background:#f9f9f9; }
+    h1 a { text-decoration: none; color: inherit; }
+    h1 { text-align:center; margin-bottom:40px; color:#333; }
+    .container { max-width:800px; margin:0 auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    form { display:flex; flex-direction:column; gap:16px; }
+    label { display:flex; flex-direction:column; font-size:14px; color:#333; }
+    label span { margin-bottom:6px; font-weight:500; }
+    input, textarea, select { padding:10px; font-size:14px; border:1px solid #ccc; border-radius:4px; }
+    textarea { resize:vertical; min-height:80px; }
+    .section { margin-top:24px; }
+    .section h2 { font-size:18px; margin-bottom:12px; color:#222; }
+    .order-summary { border-top:1px solid #e0e0e0; padding-top:20px; margin-top:20px; }
+    .order-item { display:flex; justify-content:space-between; margin-bottom:8px; }
+    .order-item:last-child { font-weight:600; font-size:16px; }
+    .btn { margin-top:20px; padding:14px; background:#000; color:#fff; font-size:16px; border:none; border-radius:6px; cursor:pointer; }
+    .btn:hover { background:#333; }
+  </style>
+</head>
+<body>
+  <h1><a href="index.html">Просто вещи</a></h1>
+  <h1>Оформление заказа</h1>
+  <div class="container">
+    <form id="checkout-form">
+      <label>
+        <span>Фамилия Имя Отчество</span>
+        <textarea id="fullName" placeholder="Введите ФИО" required></textarea>
+      </label>
+      <label>
+        <span>Email</span>
+        <input type="email" id="email" placeholder="example@mail.com" required />
+      </label>
+      <label>
+        <span>Телефон</span>
+        <input type="tel" id="phone" placeholder="+7 (___) ___-__-__" required />
+      </label>
+      <div class="section">
+        <h2>Адрес доставки</h2>
+        <label>
+          <span>Город</span>
+          <input type="text" id="city" placeholder="Москва" required />
+        </label>
+        <label>
+          <span>Улица, дом, квартира</span>
+          <input type="text" id="address" placeholder="ул. Ленина, д. 1, кв. 12" required />
+        </label>
+      </div>
+      <div class="section">
+        <h2>Способ доставки</h2>
+        <select id="deliveryMethod" required>
+          <option value="courier">Курьерская доставка (450 ₽)</option>
+          <option value="pickup">Самовывоз (бесплатно)</option>
+          <option value="post">Почта России (до 15 дней, 300 ₽)</option>
+        </select>
+      </div>
+      <div class="order-summary">
+        <h2>Ваш заказ</h2>
+        <div id="summary-list"></div>
+      </div>
+      <button type="submit" class="btn">Подтвердить заказ</button>
+    </form>
+  </div>
+  <script>
+    // Загрузка корзины и отображение в summary
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const grouped = {};
+    cart.forEach(item => {
+      const key = item.id + '|' + item.size;
+      if (!grouped[key]) grouped[key] = { ...item, qty: 0 };
+      grouped[key].qty++;
+    });
+    const summaryList = document.getElementById('summary-list');
+    let total = 0;
+    Object.values(grouped).forEach(item => {
+      const line = document.createElement('div');
+      line.className = 'order-item';
+      const cost = item.price * item.qty;
+      total += cost;
+      line.innerHTML = `<span>${item.name} &times; ${item.qty} (${item.size})</span><span>${cost} ₽</span>`;
+      summaryList.append(line);
+    });
+    const totalLine = document.createElement('div');
+    totalLine.className = 'order-item';
+    totalLine.innerHTML = `<span>Итого</span><span>${total} ₽</span>`;
+    summaryList.append(totalLine);
+
+    // Обработка формы
+    document.getElementById('checkout-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const order = {
+        customer: {
+          fullName: document.getElementById('fullName').value,
+          email: document.getElementById('email').value,
+          phone: document.getElementById('phone').value,
+          city: document.getElementById('city').value,
+          address: document.getElementById('address').value
+        },
+        delivery: document.getElementById('deliveryMethod').value,
+        items: cart
+      };
+      console.log('Order:', order);
+      alert('Заказ успешно оформлен! Скоро с вами свяжется наш менеджер.');
+      localStorage.removeItem('cart');
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

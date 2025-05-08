@@ -132,9 +132,7 @@
       font-size:20px; font-weight:600; text-align:right; margin-bottom:16px;
     }
     .drawer-footer .checkout-btn {
-      width:100%; padding:14px 0; background:#000; color:#fff;
-      border:none; border-radius:6px; font-size:16px; font-weight:600;
-      text-transform:uppercase; cursor:pointer; transition:background .3s;
+      width: 100%; padding: 14px 0; margin-top: 8px; background: #000; color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer;
     }
     .drawer-footer .checkout-btn:hover { background:#333 }
   </style>
@@ -309,9 +307,12 @@
 
     // === Финальное оформление заказа ===
     function onCheckout() {
-      if (tg) tg.sendData(JSON.stringify({ action:'checkout', items:cart }));
-      else    alert('Ваш заказ: ' + JSON.stringify(cart));
-    }
+  // Закроем дровер (необязательно):
+  closeDrawer();
+  // Перейдём на страницу оформления заказа:
+  window.location.href = 'checkout.html';
+}
+
   </script>
 </body>
 </html>
