@@ -63,6 +63,16 @@
       font-weight:bold;
       color:#000;
     }
+    .product-content .add-btn {
+      margin-top:10px;
+      padding:8px;
+      background:#000;
+      color:#fff;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+    }
+    .product-content .add-btn:hover { background:#333; }
 
     /* -- Кнопка «Корзина» -- */
     #cart-button {
@@ -129,8 +139,6 @@
   </div>
 
   <script>
-    // === Cart из localStorage ===
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
     // === Список товаров с category и url ===
     const products = [
@@ -169,7 +177,6 @@
     // === Инициализация ===
     window.addEventListener('DOMContentLoaded', () => {
       renderProducts();
-      updateCartUI();
     });
 
     // === Рендерим карточки ===
@@ -177,12 +184,10 @@
       const container = document.getElementById('products');
       container.innerHTML = '';
       products.forEach(p => {
-        // <a> чтобы весь блок был кликабелен
-        const link = document.createElement('a');
-        link.href = p.url;
-        link.className = 'product';
+        const card = document.createElement('div');
+        card.className = 'product';
+        card.onclick = () => { window.location.href = p.url; };
 
-        // картинка с hover-flip
         const img = document.createElement('img');
         img.src = p.image;
         img.alt = p.name;
@@ -190,58 +195,34 @@
         img.dataset.back  = p.back;
         img.onmouseenter = e => e.target.src = e.target.dataset.back;
         img.onmouseleave = e => e.target.src = e.target.dataset.front;
-        link.append(img);
+        card.append(img);
 
-        // текстовый блок
         const info = document.createElement('div');
         info.className = 'product-content';
         info.innerHTML = `
           <h3>${p.name}</h3>
           <p class="category">${p.category}</p>
-          <p class="price">Цена: ${p.price} ₽</p>
-        `;
-        link.append(info);
+          <p class="price">Цена: ${p.price} ₽</p>`;
 
-        container.append(link);
+        const btn = document.createElement('button');
+        btn.className = 'add-btn';
+        btn.textContent = 'В корзину';
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const item = { id:p.id, name:p.name, price:p.price, image:p.image, size:'M' };
+          cart.push(item);
+          saveCart();
+          updateCartUI();
+          openDrawer();
+        };
+        info.append(btn);
+
+        card.append(info);
+        container.append(card);
       });
     }
-
-    // === Обновляем drawer и кнопку ===
-     function updateCartUI() {
-      const list = document.getElementById('drawer-list'), sumEl = document.getElementById('drawer-sum'), btn = document.getElementById('cart-button');
-      list.innerHTML=''; let sum=0; const grouped={};
-      cart.forEach(item=>{ const key=item.id+'|'+item.size; if(!grouped[key]) grouped[key]={item,qty:0}; grouped[key].qty++; });
-      Object.values(grouped).forEach(({item,qty})=>{
-        sum+=item.price*qty;
-        const row=document.createElement('div'); row.className='drawer-item';
-        row.innerHTML=`
-          <img src="${item.image}" alt="${item.name}">
-          <div class="item-info">
-            <div class="title">${item.name}</div>
-            <div class="subtitle">Артикул: ${item.id} | Размер: ${item.size}</div>
-          </div>
-          <div class="item-controls">
-            <button onclick="changeQty('${item.id}|${item.size}',-1)">−</button>
-            <span class="qty">${qty}</span>
-            <button onclick="changeQty('${item.id}|${item.size}',+1)">+</button>
-            <span class="price">${item.price*qty} ₽</span>
-            <button class="remove-btn" onclick="removeItem('${item.id}|${item.size}')">×</button>
-          </div>`;
-        list.append(row);
-      });
-      sumEl.textContent=sum; btn.textContent=`Корзина (${cart.length})`;
-    }
-    function changeQty(key,delta){ const [id,size]=key.split('|'); if(delta>0){ const f=cart.find(x=>x.id==id&&x.size===size); if(f) cart.push(f);} else { const i=cart.findIndex(x=>x.id==id&&x.size===size); if(i>-1) cart.splice(i,1);} localStorage.setItem('cart',JSON.stringify(cart)); updateCartUI(); }
-    function removeItem(key){ const [id,size]=key.split('|'); cart=cart.filter(x=>!(x.id==id&&x.size===size)); localStorage.setItem('cart',JSON.stringify(cart)); updateCartUI(); }
-    function openDrawer(){document.getElementById('cart-drawer').classList.add('open');}
-    function closeDrawer(){document.getElementById('cart-drawer').classList.remove('open');}
-    function onCheckout() {
-  // Закроем дровер (необязательно):
-  closeDrawer();
-  // Перейдём на страницу оформления заказа:
-  window.location.href = 'checkout.html';
-}
 
   </script>
+  <script src="cart.js"></script>
 </body>
 </html>
