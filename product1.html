@@ -121,47 +121,14 @@
 
     // Корзина с учётом размера и оформлением аналогично кофты2
     const sizeSelect = document.getElementById('size');
-    let cart = JSON.parse(localStorage.getItem('cart')||'[]');
     document.getElementById('addBtn').addEventListener('click', () => {
       const item = { id:1, name:'Кофта 1', price:2000, image:images[0], size:sizeSelect.value };
-      cart.push(item); localStorage.setItem('cart', JSON.stringify(cart)); updateCartUI(); openDrawer();
+      cart.push(item);
+      saveCart();
+      updateCartUI();
+      openDrawer();
     });
-    window.addEventListener('DOMContentLoaded', updateCartUI);
-    function updateCartUI() {
-      const list = document.getElementById('drawer-list'), sumEl = document.getElementById('drawer-sum'), btn = document.getElementById('cart-button');
-      list.innerHTML=''; let sum=0; const grouped={};
-      cart.forEach(item=>{ const key=item.id+'|'+item.size; if(!grouped[key]) grouped[key]={item,qty:0}; grouped[key].qty++; });
-      Object.values(grouped).forEach(({item,qty})=>{
-        sum+=item.price*qty;
-        const row=document.createElement('div'); row.className='drawer-item';
-        row.innerHTML=`
-          <img src="${item.image}" alt="${item.name}">
-          <div class="item-info">
-            <div class="title">${item.name}</div>
-            <div class="subtitle">Артикул: ${item.id} | Размер: ${item.size}</div>
-          </div>
-          <div class="item-controls">
-            <button onclick="changeQty('${item.id}|${item.size}',-1)">−</button>
-            <span class="qty">${qty}</span>
-            <button onclick="changeQty('${item.id}|${item.size}',+1)">+</button>
-            <span class="price">${item.price*qty} ₽</span>
-            <button class="remove-btn" onclick="removeItem('${item.id}|${item.size}')">×</button>
-          </div>`;
-        list.append(row);
-      });
-      sumEl.textContent=sum; btn.textContent=`Корзина (${cart.length})`;
-    }
-    function changeQty(key,delta){ const [id,size]=key.split('|'); if(delta>0){ const f=cart.find(x=>x.id==id&&x.size===size); if(f) cart.push(f);} else { const i=cart.findIndex(x=>x.id==id&&x.size===size); if(i>-1) cart.splice(i,1);} localStorage.setItem('cart',JSON.stringify(cart)); updateCartUI(); }
-    function removeItem(key){ const [id,size]=key.split('|'); cart=cart.filter(x=>!(x.id==id&&x.size===size)); localStorage.setItem('cart',JSON.stringify(cart)); updateCartUI(); }
-    function openDrawer(){document.getElementById('cart-drawer').classList.add('open');}
-    function closeDrawer(){document.getElementById('cart-drawer').classList.remove('open');}
-    function onCheckout() {
-  // Закроем дровер (необязательно):
-  closeDrawer();
-  // Перейдём на страницу оформления заказа:
-  window.location.href = 'checkout.html';
-}
-
   </script>
+  <script src="cart.js"></script>
 </body>
 </html>
